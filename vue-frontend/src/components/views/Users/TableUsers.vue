@@ -1,0 +1,68 @@
+<script async setup>
+    import { useUserStore } from '../../../stores/users'
+    import PaginationLaravel from '../../PaginationLaravel.vue';
+    import { storeToRefs } from 'pinia';
+
+    const userStore = useUserStore();
+    
+    const {pagination} = storeToRefs(userStore);
+
+    await userStore.getUsers();
+
+    await userStore.getAllPermsRoles();
+
+</script>
+
+<template>
+    <div class="w-full max-w-full mx-auto">
+        <header class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 class="font-semibold text-gray-800 text-lg">Users</h2>
+        </header>
+        <div class="p-3">
+            <div class="overflow-x-auto">
+                <table class="table-auto w-full">
+                    <thead class="text-xs font-semibold uppercase text-gray-400 bg-gray-50">
+                        <tr>
+                            <th class="p-2 whitespace-nowrap">
+                                <div class="font-semibold text-left">ID</div>
+                            </th>
+                            <th class="p-2 whitespace-nowrap">
+                                <div class="font-semibold text-left">Name</div>
+                            </th>
+                            <th class="p-2 whitespace-nowrap">
+                                <div class="font-semibold text-left">Email</div>
+                            </th>
+                            <th class="p-2 whitespace-nowrap">
+                                <div class="font-semibold text-center">Manage</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-gray-100">
+                        <tr v-for="(user, index) in userStore.usersPermsRoles" :key="user.id" class="odd:bg-white even:bg-slate-50">
+                            <td class="p-2 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="font-medium text-gray-800">{{ user.id }}</div>
+                                </div>
+                            </td>
+                            <td class="p-2 whitespace-nowrap">
+                                <div class="text-left">{{ user.name }}</div>
+                            </td>
+                            <td class="p-2 whitespace-nowrap">
+                                <div class="text-left">{{ user.email }}</div>
+                            </td>
+                            <td class="p-2 whitespace-nowrap">
+                                <div class="text-lg text-center space-x-2">
+                                    <router-link :to="{name: 'EditUser', params: {id: user.id}}" class="rounded-md px-2 py-1 text-sm text-white bg-emerald-500 hover:bg-emerald-700">Edit Perms</router-link>
+                                    <button @click="userStore.deleteUser(user.id)" class="rounded-md px-2 py-1 text-sm text-white bg-red-500 hover:bg-red-700">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="flex justify-center">
+                    <PaginationLaravel :pagination="pagination" @paginate="userStore.getUsers()" :offset="4"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
